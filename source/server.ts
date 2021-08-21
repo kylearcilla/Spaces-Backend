@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import SpotifyWebApi from "spotify-web-api-node";
 import mysql from "mysql2";
+import dbConfig from "../utils/db.config";
 import dotenv from "dotenv";
 import { generateToken, verifyToken } from "../utils/auth";
 
@@ -10,10 +11,10 @@ const port = process.env.PORT || 3001;
 
 const server = express();
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "kylearcilla",
-  password: "kyle13410",
-  database: "SpacesDB",
+  host: dbConfig.HOST,
+  user: dbConfig.USER,
+  password: dbConfig.PASSWORD,
+  database: dbConfig.DB,
 });
 db.connect();
 
