@@ -16,7 +16,6 @@ const db = mysql.createPool({
   password: dbConfig.PASSWORD,
   database: dbConfig.DB,
 });
-db.connect();
 
 server.use(cors());
 server.use(express.json());
