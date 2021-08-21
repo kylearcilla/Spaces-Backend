@@ -27,7 +27,7 @@
     "typescript": "4.3.5"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^8.5.4",
+    "@types/jsonwebtoken": "^8.5.5",
     "@types/mysql": "^2.15.19"
   }
 }
