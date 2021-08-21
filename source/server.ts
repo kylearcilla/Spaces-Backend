@@ -206,7 +206,7 @@ server.get("/get-sessions/:email", (req, res) => {
 server.post("/spotify-login", (req, res) => {
   const code = req.body.code;
   const spotifyWebApi = new SpotifyWebApi({
-    redirectUri: "http://localhost:3000/home/spotify",
+    redirectUri: "https://spaces-app.netlify.app/home/spotify",
     clientId: "0d42e1f4fea548bcae8fe6c75daea669",
     clientSecret: "a12c4d20747a4bdaac5277115c73de76",
   });
@@ -228,7 +228,7 @@ server.post("/spotify-login", (req, res) => {
 server.post("/spotify-refresh", (req, res) => {
   const refreshToken = req.body.refreshToken;
   const spotifyWebApi = new SpotifyWebApi({
-    redirectUri: "http://localhost:3000/home/spotify",
+    redirectUri: "https://spaces-app.netlify.app/home/spotify",
     clientId: "0d42e1f4fea548bcae8fe6c75daea669",
     clientSecret: "a12c4d20747a4bdaac5277115c73de76",
     refreshToken,
