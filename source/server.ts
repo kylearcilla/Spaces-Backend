@@ -10,7 +10,7 @@ dotenv.config();
 const port = process.env.PORT || 3001;
 
 const server = express();
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: dbConfig.HOST,
   user: dbConfig.USER,
   password: dbConfig.PASSWORD,
@@ -194,7 +194,7 @@ server.get("/get-sessions/:email", (req, res) => {
     });
     return;
   }
-  const query = `SELECT * FROM SpacesDB.sessions 
+  const query = `SELECT * FROM sessions 
        WHERE owner_email = '${params.email}';
   `;
   db.query(query, (err, result) => {
