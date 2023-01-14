@@ -19,7 +19,6 @@ const db = mysql.createPool({
 
 server.use(cors());
 server.use(express.json());
-server.use(express.urlencoded({ extended: true }));
 
 server.get("/login/:email", (req, res) => {
   const params: any = req.params;
@@ -202,7 +201,6 @@ server.get("/get-sessions/:email", (req, res) => {
   });
 });
 
-// nodemon source/server.ts
 server.post("/spotify-login", (req, res) => {
   const code = req.body.code;
   const spotifyWebApi = new SpotifyWebApi({
@@ -220,7 +218,7 @@ server.post("/spotify-login", (req, res) => {
         expiresIn: data.body.expires_in,
       });
     })
-    .catch((error) => {
+    .catch(() => {
       res.sendStatus(400);
     });
 });
@@ -242,8 +240,7 @@ server.post("/spotify-refresh", (req, res) => {
         expiresIn: data.body.expires_in,
       });
     })
-    .catch((err) => {
-      console.log(err);
+    .catch(() => {
       res.sendStatus(400);
     });
 });
