@@ -2,31 +2,30 @@ import express from "express";
 import cors from "cors";
 import SpotifyWebApi from "spotify-web-api-node";
 import mysql from "mysql2";
-import dbConfig from "../utils/db.config";
 import dotenv from "dotenv";
-import { generateToken, verifyToken } from "../utils/auth";
+import { generateToken, verifyToken } from "./auth.js";
 
 dotenv.config();
-const port = process.env.PORT || 3001;
+let port = process.env.PORT || 3001;
 
-const server = express();
-const db = mysql.createPool({
-  host: dbConfig.HOST,
-  user: dbConfig.USER,
-  password: dbConfig.PASSWORD,
-  database: dbConfig.DB,
+let server = express();
+let db = mysql.createPool({
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DB,
 });
 
 server.use(cors());
 server.use(express.json());
 
 server.get("/login/:email", (req, res) => {
-  const params: any = req.params;
-  const query = `SELECT * FROM users WHERE google_email = '${params.email}'`;
+  let params = req.params;
+  let query = `SELECT * FROM users WHERE google_email = '${params.email}'`;
 
   db.query(query, (err, result) => {
     if (err) {
-      const errorCode = err.code;
+      let errorCode = err.code;
       res.send({
         error: {
           code: errorCode,
@@ -34,7 +33,7 @@ server.get("/login/:email", (req, res) => {
       });
       return;
     }
-    const token = generateToken(params.email);
+    let token = generateToken(params.email);
     res.send({
       user: result,
       token,
@@ -43,7 +42,7 @@ server.get("/login/:email", (req, res) => {
 });
 
 server.post("/register", (req, res) => {
-  const query = `INSERT INTO 
+  let query = `INSERT INTO 
     users(
       google_email
     )
@@ -53,7 +52,7 @@ server.post("/register", (req, res) => {
 
   db.query(query, (err) => {
     if (err) {
-      const errorCode = err.code;
+      let errorCode = err.code;
       res.send({
         error: {
           code: errorCode,
@@ -61,7 +60,7 @@ server.post("/register", (req, res) => {
       });
       return;
     }
-    const token = generateToken(req.body.email);
+    let token = generateToken(req.body.email);
     res.send({
       token,
     });
@@ -69,7 +68,7 @@ server.post("/register", (req, res) => {
 });
 
 server.post("/new-session", (req, res) => {
-  const { hasError, response } = verifyToken(req);
+  let { hasError, response } = verifyToken(req);
   if (hasError) {
     res.send({
       error: {
@@ -78,8 +77,8 @@ server.post("/new-session", (req, res) => {
     });
     return;
   }
-  const new_session = req.body.new_session;
-  const query = `INSERT INTO 
+  let new_session = req.body.new_session;
+  let query = `INSERT INTO 
     sessions(
       name, 
       date_created, 
@@ -106,8 +105,8 @@ server.post("/new-session", (req, res) => {
 });
 
 server.post("/replace", (req, res) => {
-  const { hasError, response, decodedToken = {} } = verifyToken(req);
-  const userEmail = (decodedToken as any).email;
+  let { hasError, response, decodedToken = {} } = verifyToken(req);
+  let userEmail = (decodedToken).email;
   if (hasError) {
     res.send({
       error: {
@@ -124,12 +123,12 @@ server.post("/replace", (req, res) => {
     });
     return;
   }
-  const query = `UPDATE users 
+  let query = `UPDATE users 
       SET google_email = '${req.body.new_email}'
       WHERE google_email = '${req.body.old_email}'
   ;`;
 
-  db.query(query, (err, result: any) => {
+  db.query(query, (err, result) => {
     if (err) throw err;
     if (result.affectedRows === 0) {
       res.send({
@@ -139,7 +138,7 @@ server.post("/replace", (req, res) => {
       });
       return;
     }
-    const token = generateToken(req.body.new_email);
+    let token = generateToken(req.body.new_email);
     res.send({
       token,
     });
@@ -147,8 +146,8 @@ server.post("/replace", (req, res) => {
 });
 
 server.post("/delete", (req, res) => {
-  const { hasError, response, decodedToken = {} } = verifyToken(req);
-  const userEmail = (decodedToken as any).email;
+  let { hasError, response, decodedToken = {} } = verifyToken(req);
+  let userEmail = (decodedToken).email;
   if (hasError) {
     res.send({
       error: {
@@ -165,7 +164,7 @@ server.post("/delete", (req, res) => {
     });
     return;
   }
-  const query = `DELETE FROM users WHERE google_email = '${req.body.email}';`;
+  let query = `DELETE FROM users WHERE google_email = '${req.body.email}';`;
   db.query(query, (err, result) => {
     if (err) throw err;
     res.send(result);
@@ -173,8 +172,8 @@ server.post("/delete", (req, res) => {
 });
 
 server.get("/get-sessions/:email", (req, res) => {
-  const { hasError, response, decodedToken = {} } = verifyToken(req);
-  const userEmail = (decodedToken as any).email;
+  let { hasError, response, decodedToken = {} } = verifyToken(req);
+  let userEmail = (decodedToken).email;
   if (hasError) {
     res.send({
       error: {
@@ -183,7 +182,7 @@ server.get("/get-sessions/:email", (req, res) => {
     });
     return;
   }
-  const params: any = req.params;
+  let params = req.params;
   if (userEmail !== params.email) {
     res.send({
       error: {
@@ -192,7 +191,7 @@ server.get("/get-sessions/:email", (req, res) => {
     });
     return;
   }
-  const query = `SELECT * FROM sessions 
+  let query = `SELECT * FROM sessions 
        WHERE owner_email = '${params.email}';
   `;
   db.query(query, (err, result) => {
@@ -202,8 +201,8 @@ server.get("/get-sessions/:email", (req, res) => {
 });
 
 server.post("/spotify-login", (req, res) => {
-  const code = req.body.code;
-  const spotifyWebApi = new SpotifyWebApi({
+  let code = req.body.code;
+  let spotifyWebApi = new SpotifyWebApi({
     redirectUri: "https://spaces-app.netlify.app/home/spotify",
     clientId: "0d42e1f4fea548bcae8fe6c75daea669",
     clientSecret: "a12c4d20747a4bdaac5277115c73de76",
@@ -224,8 +223,8 @@ server.post("/spotify-login", (req, res) => {
 });
 
 server.post("/spotify-refresh", (req, res) => {
-  const refreshToken = req.body.refreshToken;
-  const spotifyWebApi = new SpotifyWebApi({
+  let refreshToken = req.body.refreshToken;
+  let spotifyWebApi = new SpotifyWebApi({
     redirectUri: "https://spaces-app.netlify.app/home/spotify",
     clientId: "0d42e1f4fea548bcae8fe6c75daea669",
     clientSecret: "a12c4d20747a4bdaac5277115c73de76",
@@ -248,3 +247,5 @@ server.post("/spotify-refresh", (req, res) => {
 server.listen(port, () => {
   console.log("App is listening on port " + port);
 });
+
+// node source/server

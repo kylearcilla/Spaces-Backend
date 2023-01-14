@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
+
 const JWT_KEY = process.env.JWT_KEY ?? "0";
 
-export const generateToken = (email: string) => {
+export const generateToken = (email) => {
   return jwt.sign(
     {
       email: email,
@@ -10,8 +11,8 @@ export const generateToken = (email: string) => {
   );
 };
 
-export const verifyToken = (req: any) => {
-  const authHeader: string = req.headers.authorization;
+export const verifyToken = (req) => {
+  const authHeader = req.headers.authorization;
   if (!authHeader) {
     return {
       hasError: true,
