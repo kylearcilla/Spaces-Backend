@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import SpotifyWebApi from "spotify-web-api-node";
 import mysql from "mysql2";
+import SpotifyWebApi from "spotify-web-api-node";
 import dotenv from "dotenv";
 import { generateToken, verifyToken } from "./auth.js";
 
